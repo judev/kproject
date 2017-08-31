@@ -16,5 +16,5 @@ command . <(minikube completion bash)
 command . <(helm completion bash)
 command . <(kproject completion bash)
 
-kproject chart sync-pull -y >/dev/null 2>&1
+curl -Is "$DOCKER_REPO" >/dev/null && kproject chart sync pull -y >/dev/null 2>&1
 

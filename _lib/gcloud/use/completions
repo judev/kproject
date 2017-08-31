@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+gcloud config configurations list --format='value(name)'
+

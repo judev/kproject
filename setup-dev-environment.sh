@@ -44,7 +44,6 @@ fi
 
 test -d "$PROJECT_ROOT_PATH/environments" || mkdir -p "$PROJECT_ROOT_PATH/environments"
 test -d "$PROJECT_ROOT_PATH/environments/local" || mkdir -p "$PROJECT_ROOT_PATH/environments/local"
-test -d "$PROJECT_ROOT_PATH/environments/staging" || mkdir -p "$PROJECT_ROOT_PATH/environments/staging"
 
 test -f "$PROJECT_ROOT_PATH/.project.properties" || (
   echo PROJECT_ROOT_PATH='"'"$PROJECT_ROOT_PATH"'"'
@@ -58,29 +57,15 @@ test -f "$PROJECT_ROOT_PATH/.project.properties" || (
 test -f "$PROJECT_ROOT_PATH/environments/local/common.properties" || (
   echo ENVIRONMENT_NAME=local
   echo ENVIRONMENT_TYPE=minikube
-  echo BASE_HOSTNAME=medshr.local
+  echo BASE_HOSTNAME=${PROJECT_ID}.local
   echo URL_SCHEME=http
   echo HELM_RELEASE_NAME=local
 ) > "$PROJECT_ROOT_PATH/environments/local/common.properties" 
 
 test -f "$PROJECT_ROOT_PATH/environments/local/gcloud-configuration.properties" || (
-  echo core/project=staging-medshr-net
+  echo core/project=staging-${PROJECT_EMAIL_SUFFIX}
   echo compute/zone=europe-west1-b
 ) > "$PROJECT_ROOT_PATH/environments/local/gcloud-configuration.properties" 
-
-test -f "$PROJECT_ROOT_PATH/environments/staging/common.properties" || (
-  echo ENVIRONMENT_NAME=staging
-  echo ENVIRONMENT_TYPE=gke
-  echo BASE_HOSTNAME=staging-medshr.net
-  echo URL_SCHEME=https
-  echo HELM_RELEASE_NAME=staging
-) > "$PROJECT_ROOT_PATH/environments/staging/common.properties" 
-
-test -f "$PROJECT_ROOT_PATH/environments/staging/gcloud-configuration.properties" || (
-  echo core/project=staging-medshr-net
-  echo compute/zone=europe-west1-b
-  echo container/cluster=staging-medshr-net
-) > "$PROJECT_ROOT_PATH/environments/staging/gcloud-configuration.properties" 
 
 test -L "$PROJECT_ROOT_PATH/environments/current" || (
   ln -s "$PROJECT_ROOT_PATH/environments/local" "$PROJECT_ROOT_PATH/environments/current" 
@@ -89,56 +74,54 @@ test -L "$PROJECT_ROOT_PATH/environments/current" || (
 . "$HERE/_lib/log.inc.sh"
 . "$HERE/_lib/require.inc.sh"
 
-# TODO: check for GPG key, check that it's registered with blackbox otherwise send it to JV
+# check for GPG key, check that it's registered with blackbox otherwise send it to admin
+BB_ADMINS="$PROJECT_ROOT_PATH/keyrings/live/blackbox-admins.txt"
+if [ -r "$BB_ADMINS" ]
+then
+
+  FOUND=""
+  while IFS='' read -r line || [[ -n "$line" ]]; do
+    if gpg --list-secret-keys | grep -qF "$line"
+    then
+      FOUND=1
+      break
+    fi
+  done < "$BB_ADMINS"
+  if [ -z "$FOUND" ]
+  then
+    error "GPG key not registered"
+    if email=$(gpg --list-secret-keys | grep -Eo "[^<]+@$PROJECT_EMAIL_SUFFIX")
+    then
+      echo "Exporting your GPG public key"
+      gpg --export --output "$email".pub "$email"
+      echo "Please send the file $(pwd)/${email}.pub to the admin of this git repo"
+      exit
+    else
+      cat <<EOT
+Generate a GPG key for your $PROJECT_EMAIL_SUFFIX email address and share public key
+with someone who already has decrypt access.
+
+Use the GPG defaults, use a strong passphrase that you won't forget.
+
+Replace example@$PROJECT_EMAIL_SUFFIX with your real $PROJECT_EMAIL_SUFFIX email address.
+
+gpg --gen-key
+gpg --export --output example@$PROJECT_EMAIL_SUFFIX.pub example@$PROJECT_EMAIL_SUFFIX
+
+Send the .pub file to someone with decrypt access.
+
+Once they've added your key you can "git pull" and continue setup.
+EOT
+    fi
+    exit 1
+  fi
+
+fi
 
 BLACKBOX_DECRYPT=$(require blackbox_decrypt_all_files)
-#"$BLACKBOX_DECRYPT"
+"$BLACKBOX_DECRYPT"
 
-# Fetch code repositories
-
-COMPOSER=$(require composer composer.phar)
-NPM=$(require npm)
-YARN=$(require yarn)
-
-# fetch backend code if necessary
-#
-test -d "$PROJECT_ROOT_PATH/code/backend" || (
-  info "Cloning backend source repo to code/backend"
-  git clone --recursive git@code.medshr.org:backend/medshr.net "$PROJECT_ROOT_PATH/code/backend"
-  command cd "$PROJECT_ROOT_PATH/code/backend"
-  $COMPOSER install
-  $YARN install
-  $NPM run bower install
-  ./gulp scripts styles
-)
-
-# fetch frontend code if necessary
-#
-test -d "$PROJECT_ROOT_PATH/code/frontend" || (
-  info "Cloning frontend source repo to code/frontend"
-  git clone --recursive git@code.medshr.org:frontend/medshr.net "$PROJECT_ROOT_PATH/code/frontend"
-  command cd "$PROJECT_ROOT_PATH/code/frontend"
-  $YARN install
-  $NPM run build
-)
-
-# fetch newsletter code if necessary
-#
-test -d "$PROJECT_ROOT_PATH/containers/newsletter" || (
-  info "Cloning newsletter source repo to containers/newsletter"
-  git clone --recursive git@code.medshr.org:backend/newsletter.git "$PROJECT_ROOT_PATH/containers/newsletter"
-)
-
-# fetch dashboard code if necessary
-#
-test -d "$PROJECT_ROOT_PATH/code/dashboard" || (
-  info "Cloning dashboard source repo to code/dashboard"
-  git clone --recursive git@code.medshr.org:frontend/dashboard "$PROJECT_ROOT_PATH/code/dashboard"
-  command cd "$PROJECT_ROOT_PATH/code/dashboard"
-  $YARN install
-  $NPM run build
-)
-
+. "$PROJECT_ROOT_PATH/code/clone.sh"
 
 BOOT_FILE="$(dirname "$BASH_SOURCE")/_setup-dev-environment-shell.inc.sh"
 

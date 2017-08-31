@@ -201,7 +201,22 @@ __kproject_handle_command()
   fi
   c=$((c+1))
   __debug "${FUNCNAME[0]}: looking for ${next_command}"
-  declare -F $next_command >/dev/null && $next_command
+  if declare -F $next_command >/dev/null
+  then
+    $next_command
+  else
+    cmd=$(echo $(sed 's/_kproject_//g' <<<"$next_command") | tr '_' '/' )
+    dir=$(dirname "$(which kproject)")/_lib/$cmd
+    if [ -d "$dir" ]
+    then
+      last_command=$(sed 's/^_//' <<<"$next_command")
+      if [ -x "$dir/completions" ]
+      then
+        completion_script="$dir/completions"
+      fi
+      __kproject_handle_dir "$dir"
+    fi
+  fi
 }
 
 __kproject_handle_word()
@@ -231,46 +246,24 @@ __kproject_get_config()
   fi
 }
 
-__kproject_get_container()
-{
-  local out
-  if out=$(kproject container list 2>/dev/null); then
-    COMPREPLY=( $( compgen -W "${out[*]}" -- "$cur" ) )
-  fi
-}
-
-__kproject_get_charts()
-{
-  local out
-  if out=$(kproject chart list 2>/dev/null); then
-    COMPREPLY=( $( compgen -W "${out[*]}" -- "$cur" ) )
-  fi
-}
-
-__kproject_get_services()
-{
-  local out
-  if out=$(kproject service list 2>/dev/null); then
-    COMPREPLY=( $( compgen -W "${out[*]}" -- "$cur" ) )
-  fi
-}
-
 __kproject_custom_func() {
+  local out
+  if [ -x "$completion_script" ]
+  then
+    if out=$("$completion_script" 2>/dev/null); then
+      COMPREPLY=( $( compgen -W "${out[*]}" -- "$cur" ) )
+    fi
+    return
+  elif [ -r "$completion_script" ]
+  then
+    if out=$(cat "$completion_script"); then
+      COMPREPLY=( $( compgen -W "${out[*]}" -- "$cur" ) )
+    fi
+    return
+  fi
   case ${last_command} in
     kproject_config_use )
       __kproject_get_config
-      return
-      ;;
-    kproject_container_build | kproject_container_push )
-      __kproject_get_container
-      return
-      ;;
-    kproject_chart_push )
-      __kproject_get_charts
-      return
-      ;;
-    kproject_service_deploy )
-      __kproject_get_services
       return
       ;;
     *)
@@ -347,250 +340,16 @@ _kproject_config()
   noun_aliases=()
 }
 
-_kproject_secrets_deploy()
+__kproject_handle_dir()
 {
-  last_command="kproject_secrets_deploy"
   commands=()
-
-  flags=()
-  flags+=("--all")
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_secrets()
-{
-  last_command="kproject_secrets"
-  commands=()
-  commands+=("deploy")
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_container_list()
-{
-  last_command="kproject_container_list"
-  commands=()
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_container_build()
-{
-  last_command="kproject_container_build"
-  commands=()
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_container_push()
-{
-  last_command="kproject_container_push"
-  commands=()
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_container()
-{
-  last_command="kproject_container"
-  commands=()
-  commands+=("list")
-  commands+=("build")
-  commands+=("push")
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_chart_list()
-{
-  last_command="kproject_chart_list"
-  commands=()
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_chart_push()
-{
-  last_command="kproject_chart_push"
-  commands=()
-
-  flags=()
-  flags+=("--all")
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_chart_sync()
-{
-  last_command="kproject_chart_sync"
-  commands=()
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_chart()
-{
-  last_command="kproject_chart"
-  commands=()
-  commands+=("list")
-  commands+=("push")
-  commands+=("sync")
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_service_list()
-{
-  last_command="kproject_service_list"
-  commands=()
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_service_deploy()
-{
-  last_command="kproject_service_deploy"
-  commands=()
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_service()
-{
-  last_command="kproject_service"
-  commands=()
-  commands+=("list")
-  commands+=("deploy")
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_app()
-{
-  last_command="kproject_app"
-  commands=()
-  commands+=("upgrade")
-  commands+=("deploy")
-
-  flags=()
-  two_word_flags=()
-  local_nonpersistent_flags=()
-  flags_with_completion=()
-  flags_completion=()
-
-  must_have_one_flag=()
-  must_have_one_noun=()
-  noun_aliases=()
-}
-
-_kproject_exec()
-{
-  last_command="kproject_exec"
-  commands=()
-  for cmd in $(kproject exec --list-commands)
+  dir=$1
+  for name in $(ls -1 "$dir")
   do
-    commands+=("$cmd")
+    if [ -d "$dir/$name" ]
+    then
+      commands+=("$name")
+    fi
   done
 
   flags=()
@@ -609,13 +368,16 @@ _kproject()
   last_command="kproject"
   commands=()
   commands+=("env")
-  commands+=("secrets")
-  commands+=("container")
-  commands+=("chart")
-  commands+=("service")
-  commands+=("app")
   commands+=("exec")
   commands+=("completion")
+  dir=$(dirname "$(which kproject)")/_lib
+  for name in $(ls -1 "$dir")
+  do
+    if [ -d "$dir/$name" ]
+    then
+      commands+=("$name")
+    fi
+  done
 
   flags=()
   two_word_flags=()
@@ -648,6 +410,7 @@ __start_kproject()
   local must_have_one_flag=()
   local must_have_one_noun=()
   local last_command
+  local completion_script
   local nouns=()
 
   __kproject_handle_word

@@ -87,13 +87,14 @@ config_use() {
 
   CONFIG_NAME="$PROJECT_ID-$NAME"
 
-  gcloud_use "$CONFIG_NAME"
+  kproject gcloud use "$CONFIG_NAME"
 
   if [ "$ENVIRONMENT_TYPE" == "minikube" ]
   then
     config_get_minikube
     kubectl config use-context "$CONFIG_NAME"
   else
+    GCP_ACCOUNT=$(gcloud auth list 2>/dev/null | grep -oE '[^ ]+@'$PROJECT_EMAIL_SUFFIX)
     while IFS='' read -r line || [[ -n "$line" ]]; do
       gcloud config set ${line/=/ }
       if grep -qF container/cluster <<<"$line"

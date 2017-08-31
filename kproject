@@ -5,11 +5,23 @@ set -e
 
 HERE=$(dirname "$BASH_SOURCE")
 
+if [ "$1" == "check" ]
+then
+  shift
+  "$HERE/check-dev-environment.sh"
+  exit
+elif [ "$1" == "init" ]
+then
+  shift
+  "$HERE/check-dev-environment.sh" >/dev/null
+  "$HERE/setup-dev-environment.sh" $*
+  exit
+fi
+
 . $HERE/_lib/log.inc.sh
 . $HERE/_lib/require.inc.sh
 . $HERE/_lib/ps1_functions.inc.sh
 . $HERE/_lib/config_functions.inc.sh
-. $HERE/_lib/secrets_functions.inc.sh
 . $HERE/_lib/extension_functions.inc.sh
 
 completion_bash() {
@@ -29,13 +41,8 @@ env commands:
   list
   use config_name
 
-secrets commands:
-  deploy                    - deploy any new or modified secrets in private/ to Kubernetes
-  deploy --all              - force redeployment of all secrets in private/ to Kubernetes
-  deploy path/to/secret     - deploy specific secrets to Kubernetes
-
 $(
-for group in container chart service app exec
+for group in container chart service secrets app exec
 do
   extensions=$(extension_list "$group")
   if [ -n "$extensions" ]
@@ -51,7 +58,7 @@ do
         while IFS='' read -r line || [[ -n "$line" ]]; do
           if [ -z "$i" ]
           then
-            printf "  %-30s - %s\n" "$name" "$line"
+            printf "  %-30s - %s\n" "$(tr '/' ' ' <<<"$name")" "$line"
             i="1"
           else
             printf "  %-30s   %s\n" "" "$line"
@@ -91,28 +98,6 @@ config() {
 
 }
 
-secrets() {
-
-  cmd=$1
-  shift
-  case ${cmd} in
-
-    deploy )
-      secrets_deploy "$@"
-      ;;
-
-    create_registry_key )
-      secrets_create_registry_key "$@"
-      ;;
-
-    -h|--help|help|* )
-      usage
-      ;;
-
-  esac
-
-}
-
 completion() {
 
   format=$1
@@ -141,17 +126,12 @@ main() {
       config "$@"
       ;;
 
-    secrets)
-      shift
-      secrets "$@"
-      ;;
-
     completion)
       shift
       completion "$@"
       ;;
 
-    chart | container | app | service | gcloud )
+    chart | container | app | service | gcloud | secrets )
       shift
       if [ "$1" == "--list-commands" ]
       then
