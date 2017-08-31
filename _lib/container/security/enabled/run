@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+test -r "$PROJECT_ROOT_PATH/.tenable-container-registry"
+

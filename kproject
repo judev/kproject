@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+# vim: ft=sh et sw=2 ts=2
+
+set -e
+
+HERE=$(dirname "$BASH_SOURCE")
+
+. $HERE/_lib/log.inc.sh
+. $HERE/_lib/require.inc.sh
+. $HERE/_lib/ps1_functions.inc.sh
+. $HERE/_lib/config_functions.inc.sh
+. $HERE/_lib/secrets_functions.inc.sh
+. $HERE/_lib/extension_functions.inc.sh
+
+completion_bash() {
+  cat "$(dirname "$BASH_SOURCE")/_lib/kproject_completion_bash.inc.sh"
+}
+
+config_init "$PROJECT_ROOT_PATH"
+
+usage() {
+  cat 1>&2 <<EOT
+Usage: $0 group [options] command
+
+Group may be one of:
+  env | secrets | container | chart | service | app
+
+env commands:
+  list
+  use config_name
+
+secrets commands:
+  deploy                    - deploy any new or modified secrets in private/ to Kubernetes
+  deploy --all              - force redeployment of all secrets in private/ to Kubernetes
+  deploy path/to/secret     - deploy specific secrets to Kubernetes
+
+$(
+for group in container chart service app exec
+do
+  extensions=$(extension_list "$group")
+  if [ -n "$extensions" ]
+  then
+    echo "$group commands:"
+    while read name
+    do
+      help=$(extension_help "$group" "$name")
+      if [ -n "$help" ]
+      then
+
+        i=""
+        while IFS='' read -r line || [[ -n "$line" ]]; do
+          if [ -z "$i" ]
+          then
+            printf "  %-30s - %s\n" "$name" "$line"
+            i="1"
+          else
+            printf "  %-30s   %s\n" "" "$line"
+          fi
+        done <<<"$help"
+
+      fi
+    done <<<"$extensions"
+    echo
+  fi
+done
+)
+
+EOT
+  exit 1
+}
+
+config() {
+
+  cmd=$1
+  shift
+  case ${cmd} in
+
+    list )
+      config_list "$@"
+      ;;
+
+    use )
+      config_use "$@"
+      ;;
+
+    -h|--help|help|* )
+      usage
+      ;;
+
+  esac
+
+}
+
+secrets() {
+
+  cmd=$1
+  shift
+  case ${cmd} in
+
+    deploy )
+      secrets_deploy "$@"
+      ;;
+
+    create_registry_key )
+      secrets_create_registry_key "$@"
+      ;;
+
+    -h|--help|help|* )
+      usage
+      ;;
+
+  esac
+
+}
+
+completion() {
+
+  format=$1
+  shift
+  case ${format} in
+
+    bash )
+      completion_bash
+      ;;
+
+    *)
+      usage
+      ;;
+  esac
+
+}
+
+main() {
+
+  group=$1
+
+  case ${group} in
+
+    env)
+      shift
+      config "$@"
+      ;;
+
+    secrets)
+      shift
+      secrets "$@"
+      ;;
+
+    completion)
+      shift
+      completion "$@"
+      ;;
+
+    chart | container | app | service | gcloud )
+      shift
+      if [ "$1" == "--list-commands" ]
+      then
+        extension_list "${group}"
+      else
+        extension_call "${group}" "$@"
+      fi
+      ;;
+
+    exec)
+      shift
+      if [ "$1" == "--list-commands" ]
+      then
+        extension_list scripts
+      else
+        extension_call scripts "$@"
+      fi
+      ;;
+
+    -h|--help|help|* )
+      usage
+      ;;
+  esac
+
+}
+
+main "${@:-}"
+

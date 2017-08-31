@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if [ -d "$1" ]
+then
+  echo $(command cd "$1"; pwd)
+elif [ -d "$PROJECT_ROOT_PATH/containers/$1" ]
+then
+  echo $(command cd "$PROJECT_ROOT_PATH/containers/$1"; pwd)
+else
+  echo $1
+fi
+

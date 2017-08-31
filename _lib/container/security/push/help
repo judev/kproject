@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if kproject container security enabled
+then
+  echo "push to Tenable Container Security for scanning"
+fi
+

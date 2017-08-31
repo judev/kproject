@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+NAME=$1
+VERSION=$2 # optional, will default to latest
+
+if kproject container security enabled
+then
+  if [ -z "$VERSION" ]
+  then
+    CONTAINER_PATH=$(kproject container path "$NAME")
+    VERSION=$(cat "$CONTAINER_PATH"/VERSION)
+  fi
+  URL="$TENABLE_IO_DOCKER_REPO/$NAME:$VERSION"
+  (
+    . "$PROJECT_ROOT_PATH/.tenable-container-registry"
+
+    json=$(curl -s -H "X-ApiKeys: accessKey=$TENABLE_IO_ACCESS_KEY; secretKey=$TENABLE_IO_SECRET_KEY" https://cloud.tenable.com/container-security/api/v1/reports/by_image?image_id=$(docker images --format='{{.ID}}' "$container_url" | sed 's/^sha256://'))
+    set +e
+    message=$(jq .message --exit-status --raw-output <<<"$json")
+    res=$?
+    set -e
+    if [ "$res" == "0" ]
+    then
+      echo "Security scan: $message" 1>&2
+      exit 1
+    else
+      jq '("Risk score: \(.risk_score) / 10"),("Issues found: \(.findings|length)"),"Full report: https://cloud.tenable.com/container-security/reports/tag/html/\(.id)"' -r <<<"$json"
+    fi
+
+  )
+else
+  error_exit "No security repo configured"
+fi
+

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+GCP_ACCOUNT=$(gcloud auth list 2>/dev/null | grep -oE '[^ ]+@'$PROJECT_EMAIL_SUFFIX)
+if [ -z "$(gcloud auth application-default print-access-token --account="$GCP_ACCOUNT")" ]
+then
+	gcloud auth application-default login $GCP_ACCOUNT
+fi
+docker login -u oauth2accesstoken -p "$(gcloud auth print-access-token --account="$GCP_ACCOUNT")" https://eu.gcr.io
+

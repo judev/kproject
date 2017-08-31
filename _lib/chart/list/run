@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+command cd "$PROJECT_ROOT_PATH/services"; find . -mindepth 2 -maxdepth 2 -type f -name 'Chart.yaml' -printf '%p\n' | xargs dirname | xargs -n1 basename
+

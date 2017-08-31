@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+IMAGE=$1
+VERSION=$2
+if kproject container security enabled
+then
+  (
+    . "$PROJECT_ROOT_PATH/.tenable-container-registry"
+    docker tag "$DOCKER_REPO/$IMAGE:$VERSION" "$TENABLE_IO_DOCKER_REPO/$IMAGE:latest"
+    docker tag "$DOCKER_REPO/$IMAGE:$VERSION" "$TENABLE_IO_DOCKER_REPO/$IMAGE:$VERSION"
+    docker push "$TENABLE_IO_DOCKER_REPO/$IMAGE:latest"
+    docker push "$TENABLE_IO_DOCKER_REPO/$IMAGE:$VERSION"
+  )
+
+  info "Pushed $TENABLE_IO_DOCKER_REPO/$IMAGE:$VERSION"
+
+  kproject container security status "$IMAGE" "$VERSION"
+
+fi
+

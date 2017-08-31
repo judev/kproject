@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+GCP_ACCOUNT=$(gcloud auth list 2>/dev/null | grep -oE '[^ ]+@'$PROJECT_EMAIL_SUFFIX)
+if [ -z "$GCP_ACCOUNT" ]
+then
+  echo -n "Please enter your $PROJECT_EMAIL_SUFFIX email address: "
+  read GCP_ACCOUNT
+  gcloud auth login "$GCP_ACCOUNT"
+fi
+

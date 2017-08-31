@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+command cd "$PROJECT_ROOT_PATH/containers"
+find . -mindepth 1 -maxdepth 1 -type d -printf '%f\n'
+

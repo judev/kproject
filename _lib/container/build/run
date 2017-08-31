@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+config_get_minikube
+
+PUSH=""
+if grep -Fq '\--push' <<<"$*"
+then
+  PUSH="1"
+fi
+
+kproject gcloud docker-login
+
+for CONTAINER_PATH in $@
+do
+  if [ "$CONTAINER_PATH" != "--push" ]
+  then
+    CONTAINER_PATH=$(__resolve_container_path $CONTAINER_PATH)
+    if [ -f "$CONTAINER_PATH/Dockerfile" ]
+    then
+      IMAGE="$(basename "$CONTAINER_PATH")"
+
+      date +'%y%m%d-%H%M%S' > "$CONTAINER_PATH/VERSION"
+      VERSION=$(cat "$CONTAINER_PATH"/VERSION)
+
+      test -x "$CONTAINER_PATH/build.sh" && "$CONTAINER_PATH/build.sh"
+
+      docker build -t $DOCKER_REPO/$IMAGE:latest $CONTAINER_PATH
+      docker tag $DOCKER_REPO/$IMAGE:latest $DOCKER_REPO/$IMAGE:$VERSION
+
+      info "Built $DOCKER_REPO/$IMAGE:$VERSION"
+
+      VALUES_FILES=$(find "$PROJECT_ROOT_PATH/services/" -name 'values*.yaml' | xargs grep -Fl "$DOCKER_REPO")
+      for F in $VALUES_FILES
+      do
+          if grep -q "$DOCKER_REPO/$IMAGE" "$F"
+          then
+          grep -nA1 "$DOCKER_REPO/$IMAGE" "$F" | \
+            grep tag: | \
+            sed -r 's/^([0-9]+)-( *tag: )(.+)$/sed -i"" '"'"'\1s\/tag: .*\/tag: '$VERSION'\/'"'"' /' | \
+            awk '{print $0"'$F'"}' | \
+            sh && info "Updated image tag in $F"
+        fi
+      done
+
+      if [ -n "$PUSH" ]
+      then
+        kproject container push "$CONTAINER_PATH"
+      fi
+
+    else
+      echo "No Dockerfile in $CONTAINER_PATH" 1>&2
+    fi
+  fi
+done
+
+

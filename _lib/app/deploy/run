@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]
+then
+  kproject secrets deploy
+  kproject secrets create_registry_key
+  (
+    config_get_minikube
+    export MINIKUBE
+    helm upgrade --install $HELM_RELEASE_NAME \
+      -f <("$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/values.yaml.sh") \
+      "$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/$PROJECT_ID-$ENVIRONMENT_NAME"
+  )
+else
+  helm upgrade --install $HELM_RELEASE_NAME "$PROJECT_ROOT_PATH/services/$1"
+fi
+
+

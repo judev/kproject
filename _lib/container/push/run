@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+config_get_minikube
+
+kproject gcloud docker-login
+
+for CONTAINER_PATH in $@
+do
+  CONTAINER_PATH=$(kproject container path "$CONTAINER_PATH")
+  IMAGE="$(basename "$CONTAINER_PATH")"
+  VERSION=$(cat "$CONTAINER_PATH"/VERSION)
+  docker push "$DOCKER_REPO/$IMAGE:latest"
+  docker push "$DOCKER_REPO/$IMAGE:$VERSION"
+
+  info "Pushed $DOCKER_REPO/$IMAGE:$VERSION"
+
+  if kproject container security enabled
+  then
+    kproject container security push "$IMAGE" "$VERSION"
+  fi
+
+done
+
