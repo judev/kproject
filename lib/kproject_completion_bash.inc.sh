@@ -238,7 +238,7 @@ __kproject_handle_word()
   __kproject_handle_word
 }
 
-__kproject_get_config()
+__kproject_get_env()
 {
   local out
   if out=$(kproject env list | awk '{print $1}' 2>/dev/null); then
@@ -262,8 +262,8 @@ __kproject_custom_func() {
     return
   fi
   case ${last_command} in
-    kproject_config_use )
-      __kproject_get_config
+    kproject_env_use )
+      __kproject_get_env
       return
       ;;
     *)
@@ -290,9 +290,9 @@ _kproject_completion()
 }
 
 
-_kproject_config_list()
+_kproject_env_list()
 {
-  last_command="kproject_config_list"
+  last_command="kproject_env_list"
   commands=()
 
   flags=()
@@ -306,9 +306,9 @@ _kproject_config_list()
   noun_aliases=()
 }
 
-_kproject_config_use()
+_kproject_env_use()
 {
-  last_command="kproject_config_use"
+  last_command="kproject_env_use"
   commands=()
 
   flags=()
@@ -322,9 +322,9 @@ _kproject_config_use()
   noun_aliases=()
 }
 
-_kproject_config()
+_kproject_env()
 {
-  last_command="kproject_config"
+  last_command="kproject_env"
   commands=()
   commands+=("list")
   commands+=("use")
