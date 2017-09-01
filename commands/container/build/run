@@ -14,7 +14,7 @@ for CONTAINER_PATH in $@
 do
   if [ "$CONTAINER_PATH" != "--push" ]
   then
-    CONTAINER_PATH=$(__resolve_container_path $CONTAINER_PATH)
+    CONTAINER_PATH=$(kproject container path "$CONTAINER_PATH")
     if [ -f "$CONTAINER_PATH/Dockerfile" ]
     then
       IMAGE="$(basename "$CONTAINER_PATH")"
