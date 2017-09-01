@@ -5,6 +5,7 @@ VERSION=$2 # optional, will default to latest
 
 if kproject container security enabled
 then
+  kproject container security docker-login
   if [ -z "$VERSION" ]
   then
     CONTAINER_PATH=$(kproject container path "$NAME")

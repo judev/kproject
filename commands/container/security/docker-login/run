@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+if kproject container security enabled
+then
+	. "$PROJECT_ROOT_PATH/.tenable-container-registry"
+	docker login -u "$TENABLE_IO_ACCESS_KEY" -p "$TENABLE_IO_SECRET_KEY" "${TENABLE_IO_DOCKER_REPO%%/*}"
+fi
+
