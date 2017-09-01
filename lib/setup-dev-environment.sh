@@ -23,6 +23,17 @@ export PROJECT_ROOT_PATH
 
 # Set up default environment configurations, if they don't already exist
 
+if [ ! -f "$PROJECT_ROOT_PATH/.project.properties" ]
+then
+  echo -n "This doesn't seem to be a project directory. Start a new project [yn]? "
+  read yn
+  if [ "$yn" != "y" ]
+  then
+    echo "Ok, exiting" 1>&2
+    exit 1
+  fi
+fi
+
 if [ -f "$PROJECT_ROOT_PATH/.project.properties" ]
 then
   . "$PROJECT_ROOT_PATH/.project.properties"
@@ -31,7 +42,7 @@ else
   then
     . "$PROJECT_ROOT_PATH/.project.defaults"
   else
-    echo -n "Enter project ID ([a-z0-9_-]+): "
+    echo -n "Enter project ID (up to 12 chars, lower-case a-z0-9_-): "
     read PROJECT_ID
     echo -n "Enter project Email suffix: @"
     read PROJECT_EMAIL_SUFFIX
@@ -71,8 +82,8 @@ test -L "$PROJECT_ROOT_PATH/environments/current" || (
   ln -s "$PROJECT_ROOT_PATH/environments/local" "$PROJECT_ROOT_PATH/environments/current" 
 )
 
-. "$HERE/_lib/log.inc.sh"
-. "$HERE/_lib/require.inc.sh"
+. "$HERE/log.inc.sh"
+. "$HERE/require.inc.sh"
 
 # check for GPG key, check that it's registered with blackbox otherwise send it to admin
 BB_ADMINS="$PROJECT_ROOT_PATH/keyrings/live/blackbox-admins.txt"
@@ -121,7 +132,10 @@ fi
 BLACKBOX_DECRYPT=$(require blackbox_decrypt_all_files)
 "$BLACKBOX_DECRYPT"
 
-. "$PROJECT_ROOT_PATH/code/clone.sh"
+if [ -r "$PROJECT_ROOT_PATH/code/clone.sh" ]
+then
+  . "$PROJECT_ROOT_PATH/code/clone.sh"
+fi
 
 BOOT_FILE="$(dirname "$BASH_SOURCE")/_setup-dev-environment-shell.inc.sh"
 

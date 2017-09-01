@@ -8,24 +8,27 @@ HERE=$(dirname "$BASH_SOURCE")
 if [ "$1" == "check" ]
 then
   shift
-  "$HERE/check-dev-environment.sh"
+  "$HERE/lib/check-dev-environment.sh"
   exit
 elif [ "$1" == "init" ]
 then
   shift
-  "$HERE/check-dev-environment.sh" >/dev/null
-  "$HERE/setup-dev-environment.sh" $*
+  "$HERE/lib/setup-dev-environment.sh" $*
+  exit
+elif [ -z "$PROJECT_ROOT_PATH" ]
+then
+  bash "$BASH_SOURCE" init $@
   exit
 fi
 
-. $HERE/_lib/log.inc.sh
-. $HERE/_lib/require.inc.sh
-. $HERE/_lib/ps1_functions.inc.sh
-. $HERE/_lib/config_functions.inc.sh
-. $HERE/_lib/extension_functions.inc.sh
+. $HERE/lib/log.inc.sh
+. $HERE/lib/require.inc.sh
+. $HERE/lib/ps1_functions.inc.sh
+. $HERE/lib/config_functions.inc.sh
+. $HERE/lib/extension_functions.inc.sh
 
 completion_bash() {
-  cat "$(dirname "$BASH_SOURCE")/_lib/kproject_completion_bash.inc.sh"
+  cat "$(dirname "$BASH_SOURCE")/lib/kproject_completion_bash.inc.sh"
 }
 
 config_init "$PROJECT_ROOT_PATH"

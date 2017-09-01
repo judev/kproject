@@ -11,9 +11,9 @@ __extension_group() {
 
 __extension_root() {
   local group=$(__extension_group "$1")
-  if [ -d "$(dirname "$BASH_SOURCE")/$group" ]
+  if [ -d "$(dirname "$BASH_SOURCE")/../commands/$group" ]
   then
-    echo "$(dirname "$BASH_SOURCE")/$group"
+    echo "$(dirname "$BASH_SOURCE")/../commands/$group"
   else
     echo "$PROJECT_ROOT_PATH/$group"
   fi

@@ -206,7 +206,7 @@ __kproject_handle_command()
     $next_command
   else
     cmd=$(echo $(sed 's/_kproject_//g' <<<"$next_command") | tr '_' '/' )
-    dir=$(dirname "$(which kproject)")/_lib/$cmd
+    dir=$(dirname "$(which kproject)")/commands/$cmd
     if [ -d "$dir" ]
     then
       last_command=$(sed 's/^_//' <<<"$next_command")
@@ -370,7 +370,7 @@ _kproject()
   commands+=("env")
   commands+=("exec")
   commands+=("completion")
-  dir=$(dirname "$(which kproject)")/_lib
+  dir=$(dirname "$(which kproject)")/commands
   for name in $(ls -1 "$dir")
   do
     if [ -d "$dir/$name" ]

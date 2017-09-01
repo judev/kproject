@@ -1,10 +1,11 @@
 
 HERE=$(dirname "$BASH_SOURCE")
+KPROJECT_ROOT_PATH=$(cd "$HERE"/..; pwd)
 
-. $HERE/_lib/config_functions.inc.sh
-. $HERE/_lib/ps1_functions.inc.sh
+. $HERE/config_functions.inc.sh
+. $HERE/ps1_functions.inc.sh
 
-export PATH="$PROJECT_ROOT_PATH/bin":$PATH
+export PATH="$PROJECT_ROOT_PATH/bin":"$KPROJECT_ROOT_PATH":$PATH
 
 config_init "$PROJECT_ROOT_PATH"
 ps1_set --prompt $
