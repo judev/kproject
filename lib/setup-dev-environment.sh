@@ -53,6 +53,14 @@ else
   fi
 fi
 
+KPROJECT_VERSION=$(cat "$HERE/VERSION")
+
+if [ -n "$PROJECT_KPROJECT_VERSION" ] && [ "$KPROJECT_VERSION" -lt "$PROJECT_KPROJECT_VERSION" ]
+then
+  echo "Project requires kproject $PROJECT_KPROJECT_VERSION or newer" 1>&2
+  exit 1
+fi
+
 test -d "$PROJECT_ROOT_PATH/environments" || mkdir -p "$PROJECT_ROOT_PATH/environments"
 test -d "$PROJECT_ROOT_PATH/environments/local" || mkdir -p "$PROJECT_ROOT_PATH/environments/local"
 
