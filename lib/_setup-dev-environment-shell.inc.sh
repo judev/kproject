@@ -1,6 +1,6 @@
 
 HERE=$(dirname "$BASH_SOURCE")
-KPROJECT_ROOT_PATH=$(cd "$HERE"/..; pwd)
+KPROJECT_ROOT_PATH=$(command cd "$HERE"/..; pwd)
 
 . $HERE/config_functions.inc.sh
 . $HERE/ps1_functions.inc.sh

@@ -3,7 +3,12 @@
 
 set -e
 
-HERE=$(dirname "$BASH_SOURCE")
+THIS=$BASH_SOURCE
+while test -L "$THIS"
+do
+  THIS=$(readlink "$THIS")
+done
+HERE=$(dirname "$THIS")
 
 if [ "$1" == "check" ]
 then
