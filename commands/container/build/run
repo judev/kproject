@@ -42,7 +42,7 @@ do
           CHART=$(dirname "$F")/Chart.yaml
           if [ -r "$CHART" ]
           then
-            sed -r -i'' 's/(version: ["0-9]+\.).*/\1"'$VERSION'"/' "$CHART" && info "Update version of $CHART"
+            sed -r -i'' 's/version: "?([0-9]+\.)[^"]*"?/version: "\1'$VERSION'"/' "$CHART" && info "Update version of $CHART"
           fi
         fi
       done
