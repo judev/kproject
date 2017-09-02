@@ -206,7 +206,7 @@ __kproject_handle_command()
     $next_command
   else
     cmd=$(echo $(sed 's/_kproject_//g' <<<"$next_command") | tr '_' '/' )
-    dir=$(dirname "$(which kproject)")/commands/$cmd
+    dir=$(kproject command-path "$cmd")
     if [ -d "$dir" ]
     then
       last_command=$(sed 's/^_//' <<<"$next_command")

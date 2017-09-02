@@ -30,7 +30,7 @@ fi
 . $HERE/lib/require.inc.sh
 . $HERE/lib/ps1_functions.inc.sh
 . $HERE/lib/config_functions.inc.sh
-. $HERE/lib/extension_functions.inc.sh
+. $HERE/lib/command_functions.inc.sh
 
 completion_bash() {
   cat "$(dirname "$BASH_SOURCE")/lib/kproject_completion_bash.inc.sh"
@@ -52,13 +52,13 @@ env commands:
 $(
 for group in container chart service secrets app exec
 do
-  extensions=$(extension_list "$group")
-  if [ -n "$extensions" ]
+  cmds=$(command_list "$group")
+  if [ -n "$cmds" ]
   then
     echo "$group commands:"
     while read name
     do
-      help=$(extension_help "$group" "$name")
+      help=$(command_help "$group" "$name")
       if [ -n "$help" ]
       then
 
@@ -74,7 +74,7 @@ do
         done <<<"$help"
 
       fi
-    done <<<"$extensions"
+    done <<<"$cmds"
     echo
   fi
 done
@@ -139,23 +139,18 @@ main() {
       completion "$@"
       ;;
 
-    chart | container | app | service | gcloud | secrets )
+    command-path )
       shift
-      if [ "$1" == "--list-commands" ]
-      then
-        extension_list "${group}"
-      else
-        extension_call "${group}" "$@"
-      fi
+      command_root_path "$1"
       ;;
 
-    exec)
+    chart | container | app | service | gcloud | secrets | exec )
       shift
       if [ "$1" == "--list-commands" ]
       then
-        extension_list scripts
+        command_list "${group}"
       else
-        extension_call scripts "$@"
+        command_call "${group}" "$@"
       fi
       ;;
 

@@ -1,5 +1,5 @@
 
-__extension_group() {
+__command_group() {
   local group=$1
   if [ "$group" == "exec" ]
   then
@@ -9,19 +9,19 @@ __extension_group() {
   fi
 }
 
-__extension_root() {
-  local group=$(__extension_group "$1")
+__command_root() {
+  local group=$(__command_group "$1")
   if [ -d "$(dirname "$BASH_SOURCE")/../commands/$group" ]
   then
-    echo "$(dirname "$BASH_SOURCE")/../commands/$group"
+    echo "$(command cd "$(dirname "$BASH_SOURCE")/../commands/$group"; pwd)"
   else
     echo "$PROJECT_ROOT_PATH/$group"
   fi
 }
 
-extension_list() {
-  local group=$(__extension_group "$1")
-  local path=$(__extension_root "$group")
+command_list() {
+  local group=$(__command_group "$1")
+  local path=$(__command_root "$group")
 
   for command in $(find "$path" -type f -name run | sort)
   do
@@ -30,10 +30,17 @@ extension_list() {
   done
 }
 
-extension_help() {
-  local group=$(__extension_group "$1")
+command_root_path() {
+  local group=$(__command_group "$1")
+  local path=$(__command_root "$group")
+
+  echo $path
+}
+
+command_help() {
+  local group=$(__command_group "$1")
   local name=$2
-  local path=$(__extension_root "$group")"/$name/help"
+  local path=$(__command_root "$group")"/$name/help"
   if [ -x "$path" ]
   then
     (
@@ -46,12 +53,12 @@ extension_help() {
   fi
 }
 
-extension_call() {
+command_call() {
 
-  local group=$(__extension_group "$1")
+  local group=$(__command_group "$1")
   shift
 
-  local path=$(__extension_root "$group")
+  local path=$(__command_root "$group")
 
   while true
   do
