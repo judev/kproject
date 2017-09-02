@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+kproject container build $@
+kproject container push $@
+
+kproject chart push --all
+
+kproject app upgrade
+kproject app deploy
+
