@@ -2,7 +2,7 @@
 
 if [ -z "$1" ]
 then
-  kproject secrets deploy
+  kproject secrets deploy --all
   kproject secrets create-registry-key
   (
     config_get_minikube
