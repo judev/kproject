@@ -11,11 +11,13 @@ then
     CONTAINER_PATH=$(kproject container path "$NAME")
     VERSION=$(cat "$CONTAINER_PATH"/VERSION)
   fi
-  URL="$TENABLE_IO_DOCKER_REPO/$NAME:$VERSION"
+
   (
     . "$PROJECT_ROOT_PATH/.tenable-container-registry"
+    URL="$TENABLE_IO_DOCKER_REPO/$NAME:$VERSION"
 
-    json=$(curl -s -H "X-ApiKeys: accessKey=$TENABLE_IO_ACCESS_KEY; secretKey=$TENABLE_IO_SECRET_KEY" https://cloud.tenable.com/container-security/api/v1/reports/by_image?image_id=$(docker images --format='{{.ID}}' "$container_url" | sed 's/^sha256://'))
+    json=$(curl -s -H "X-ApiKeys: accessKey=$TENABLE_IO_ACCESS_KEY; secretKey=$TENABLE_IO_SECRET_KEY" \
+      https://cloud.tenable.com/container-security/api/v1/reports/by_image?image_id=$(docker images --format='{{.ID}}' "$URL" | sed 's/^sha256://'))
     set +e
     message=$(jq .message --exit-status --raw-output <<<"$json")
     res=$?

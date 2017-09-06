@@ -19,5 +19,7 @@ then
 
   kproject container security status "$IMAGE" "$VERSION"
 
+else
+  error_exit "Container security not enabled (missing .tenable-container-registry file)"
 fi
 
