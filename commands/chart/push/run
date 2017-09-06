@@ -4,6 +4,7 @@
 if grep -q '\--all' <<<"$@"
 then
   push_all="1"
+  sync_args=" -y"
 else
   push_all=""
 
