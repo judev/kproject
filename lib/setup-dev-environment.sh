@@ -137,9 +137,6 @@ EOT
 
 fi
 
-BLACKBOX_DECRYPT=$(require blackbox_decrypt_all_files)
-"$BLACKBOX_DECRYPT"
-
 if [ -r "$PROJECT_ROOT_PATH/code/clone.sh" ]
 then
   . "$PROJECT_ROOT_PATH/code/clone.sh"
