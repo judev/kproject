@@ -8,3 +8,5 @@ then
   gcloud auth login "$GCP_ACCOUNT"
 fi
 
+gcloud config set account "$GCP_ACCOUNT"
+
