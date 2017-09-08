@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -eo pipefail
 
 HERE=$(dirname "$BASH_SOURCE")
 

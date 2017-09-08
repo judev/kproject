@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 CONFIG_NAME="$1"
 
 if ! gcloud config configurations describe "$CONFIG_NAME" >/dev/null 2>&1

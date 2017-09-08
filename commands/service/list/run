@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 kproject chart list
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -eo pipefail
 
 helm dependency update "$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/$PROJECT_ID-$ENVIRONMENT_NAME/"
 

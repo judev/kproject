@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 skip_confirm="1"
 
 info "Getting ready to sync your remote repository at gs://$CHART_REPO_GCS_BUCKET to local directory ($CHART_REPO_LOCAL_PATH)"

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 for CHART in $@
 do
   if grep -q / <<<"$CHART"

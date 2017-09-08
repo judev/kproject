@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 test -r "$PROJECT_ROOT_PATH/.tenable-container-registry"
 

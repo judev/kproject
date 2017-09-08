@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 CHARTS="$@"
 for CHART in $CHARTS
 do

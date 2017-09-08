@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 if [ -d "$1" ]
 then
   echo $(command cd "$1"; pwd)

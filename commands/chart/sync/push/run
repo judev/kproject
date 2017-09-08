@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 skip_confirm="0"
 
 while getopts ":y" opt; do
