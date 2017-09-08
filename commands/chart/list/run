@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
 
-command cd "$PROJECT_ROOT_PATH/services"; find . -mindepth 2 -maxdepth 2 -type f -name 'Chart.yaml' -printf '%p\n' | xargs dirname | xargs -n1 basename
+set -eo pipefail
+
+if [ "$1" == "--all" ]
+then
+  command cd "$PROJECT_ROOT_PATH/services"; find . -mindepth 2 -maxdepth 2 -type f -name 'Chart.yaml' -printf '%p\n' | xargs dirname | xargs -n1 basename | sort | uniq
+else
+  helm dependency list "$ENVIRONMENT_CHART" | grep -F "$CHART_REPO_GCS_BUCKET" | awk '{print $1}' | sort
+fi
+
 

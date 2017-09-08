@@ -185,6 +185,10 @@ __kproject_handle_noun()
   c=$((c+1))
 }
 
+__kproject() {
+  KPROJECT_COMPLETING=1 kproject $@
+}
+
 __kproject_handle_command()
 {
   __debug "${FUNCNAME[0]}: c is $c words[c] is ${words[c]}"
@@ -206,7 +210,7 @@ __kproject_handle_command()
     $next_command
   else
     cmd=$(echo $(sed 's/_kproject_//g' <<<"$next_command") | tr '_' '/' )
-    dir=$(kproject command-path "$cmd")
+    dir=$(__kproject command-path "$cmd")
     if [ -d "$dir" ]
     then
       last_command=$(sed 's/^_//' <<<"$next_command")
@@ -241,7 +245,7 @@ __kproject_handle_word()
 __kproject_get_env()
 {
   local out
-  if out=$(kproject env list | awk '{print $1}' 2>/dev/null); then
+  if out=$(__kproject env list | awk '{print $1}' 2>/dev/null); then
     COMPREPLY=( $( compgen -W "${out[*]}" -- "$cur" ) )
   fi
 }

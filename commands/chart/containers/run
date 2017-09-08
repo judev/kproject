@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+CHART_SCRIPTS="$(dirname "$BASH_SOURCE")/.."
+
+if [ "$1" == "--all" ] || [ "$1" == "--env" ]
+then
+
+  for CHART in $("$CHART_SCRIPTS/list/run" "$1")
+  do
+    CHART_PATH=$("$CHART_SCRIPTS/path/run" "$CHART")
+    for URL in $(grep -hrEo "$DOCKER_REPO/[a-zA-Z0-9_\.-]+" "$CHART_PATH")
+    do
+      basename "$URL"
+    done
+  done | sort | uniq
+
+else
+
+  CHART_PATH=$("$CHART_SCRIPTS/path/run" "$1")
+  basename $(grep -hrEo "$DOCKER_REPO/[a-zA-Z0-9_\.-]+" "$CHART_PATH")
+
+fi
+

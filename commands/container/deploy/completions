@@ -1,1 +1,6 @@
-../path/completions
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+kproject chart containers --env
+

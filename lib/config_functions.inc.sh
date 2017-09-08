@@ -12,6 +12,8 @@ CONFIG_ROOT_PATH=$PROJECT_ROOT_PATH
 config_export() {
   eval $(cat "$CONFIG_ROOT_PATH/.project.properties" | sed 's/^/export /')
   eval $(cat "$CONFIG_ROOT_PATH/environments/$ENVIRONMENT_NAME/common.properties" | sed 's/^/export /')
+  export ENVIRONMENT_PATH="$CONFIG_ROOT_PATH/environments/$ENVIRONMENT_NAME"
+  export ENVIRONMENT_CHART="$ENVIRONMENT_PATH/${PROJECT_ID}-${ENVIRONMENT_NAME}"
   export -f config_get_minikube info error error_exit
 }
 
@@ -109,11 +111,19 @@ config_use() {
 }
 
 __config_post_init() {
+  if [ -n "$KPROJECT_COMPLETING" ]
+  then
+    return
+  fi
+  local NEWMINIKUBE=$(test -z "$MINIKUBE" && echo 1)
+  if [ -n "$NEWMINIKUBE" ]
+  then
+    config_get_minikube
+  fi
   if [ "$ENVIRONMENT_TYPE" == "minikube" ]
   then
-    if [ -z "$MINIKUBE" ]
+    if [ -n "$NEWMINIKUBE" ]
     then
-      config_get_minikube
       MACHINE_IP="$($MINIKUBE ip)"
 
       grep -E "$MACHINE_IP.+$BASE_HOSTNAME" /etc/hosts >/dev/null || (
@@ -133,6 +143,6 @@ __config_post_init() {
     kubectl config use-context "$CONFIG_NAME" > /dev/null
   fi
 
-  (kubectl get deployment --all-namespaces | grep tiller >/dev/null 2>&1) || helm init
+  (kubectl get deployment --namespace=kube-system | grep -F tiller >/dev/null 2>&1) || helm init
 }
 

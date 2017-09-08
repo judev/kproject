@@ -43,13 +43,15 @@ usage() {
 Usage: $0 group [options] command
 
 Group may be one of:
-  env | secrets | container | chart | service | app
-
-env commands:
-  list
-  use config_name
+  env | container | chart | service | secrets | app
 
 $(
+
+echo "env commands:"
+printf "  %-30s - %s\n" "list" "list the available environment configurations"
+printf "  %-30s - %s\n" "use config-name" "switch to using the named environment"
+echo
+
 for group in container chart service secrets app exec
 do
   cmds=$(command_list "$group")
