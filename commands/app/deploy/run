@@ -4,7 +4,12 @@ set -o pipefail
 
 if [ -z "$1" ]
 then
-  kproject secrets deploy
+  if [ "$(kubectl get secret | wc -l)" -lt 2 ]
+  then
+    kproject secrets deploy --all
+  else
+    kproject secrets deploy
+  fi
   kproject secrets create-registry-key
   (
     config_get_minikube
