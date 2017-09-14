@@ -80,7 +80,8 @@ config_use() {
 
   if [ -e "$CONFIG_ENVIRONMENTS_PATH/$NAME" ]
   then
-    ln -sfT "$CONFIG_ENVIRONMENTS_PATH/$NAME" "$CONFIG_ENVIRONMENTS_PATH/current" 
+    unlink "$CONFIG_ENVIRONMENTS_PATH/current" 
+    ln -s "$CONFIG_ENVIRONMENTS_PATH/$NAME" "$CONFIG_ENVIRONMENTS_PATH/current" 
     . "$CONFIG_ENVIRONMENTS_PATH/current/common.properties"
   else
     echo "Configuration $NAME not found" 1>&2
