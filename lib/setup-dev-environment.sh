@@ -23,7 +23,7 @@ export PROJECT_ROOT_PATH
 
 # Set up default environment configurations, if they don't already exist
 
-if [ ! -f "$PROJECT_ROOT_PATH/.project.properties" ]
+if [ ! -f "$PROJECT_ROOT_PATH/.project.properties" ] && [ ! -f "$PROJECT_ROOT_PATH/.project.defaults" ]
 then
   echo -n "This doesn't seem to be a project directory. Start a new project [yn]? "
   read yn
