@@ -144,6 +144,9 @@ __config_post_init() {
     kubectl config use-context "$CONFIG_NAME" > /dev/null
   fi
 
-  (kubectl get deployment --namespace=kube-system | grep -F tiller >/dev/null 2>&1) || helm init
+  (kubectl get deployment --namespace=kube-system | grep -F tiller >/dev/null 2>&1) || (
+    helm init
+    helm repo list | grep "$CHART_REPO_GCS_BUCKET" >/dev/null || helm repo add "$CHART_REPO_GCS_BUCKET" "https://$CHART_REPO_GCS_BUCKET.storage.googleapis.com"
+  )
 }
 
