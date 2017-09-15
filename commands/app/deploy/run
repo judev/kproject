@@ -4,7 +4,7 @@ set -o pipefail
 
 if [ -z "$1" ]
 then
-  if [ "$(kubectl get secret | wc -l)" -lt 2 ]
+  if [ "$(kubectl get secret | wc -l)" -lt "3" ]
   then
     kproject secrets deploy --all
   else
