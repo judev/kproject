@@ -32,7 +32,7 @@ CHARTS="$@"
 if [ "$push_all" == "1" ]
 then
   command cd $PROJECT_ROOT_PATH
-  CHARTS=$(find services/ -mindepth 2 -maxdepth 2 -type f -name 'Chart.yaml' | xargs dirname)
+  CHARTS=$(find services/ -mindepth 2 -maxdepth 2 -type f -name 'Chart.yaml' | xargs -n1 dirname)
 fi
 
 for CHART in $CHARTS
