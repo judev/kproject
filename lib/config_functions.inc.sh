@@ -130,7 +130,17 @@ __config_post_init() {
       grep -E "$MACHINE_IP.+$BASE_HOSTNAME" /etc/hosts >/dev/null || (
         info "Adding '$BASE_HOSTNAME' to /etc/hosts - you may be prompted for your password"
 
-        sudo bash -c "sed -i'' '/$BASE_HOSTNAME/d' /etc/hosts; \
+        set +e
+        GSED="$(which gsed)"
+        set -e
+        if [ -x "$GSED" ]
+        then
+          SED=gsed
+        else
+          SED=sed
+        fi
+
+        sudo bash -c "$SED -i'' '/$BASE_HOSTNAME/d' /etc/hosts; \
           echo '$MACHINE_IP $BASE_HOSTNAME' >> /etc/hosts; \
           echo '$MACHINE_IP en.$BASE_HOSTNAME' >> /etc/hosts; \
           echo '$MACHINE_IP www.$BASE_HOSTNAME' >> /etc/hosts; \

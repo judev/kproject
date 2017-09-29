@@ -36,15 +36,24 @@ do
       do
         if grep -q "$DOCKER_REPO/$IMAGE" "$F"
         then
+          set +e
+          GSED="$(which gsed)"
+          set -e
+          if [ -x "$GSED" ]
+          then
+            SED=gsed
+          else
+            SED=sed
+          fi
           grep -nA1 "$DOCKER_REPO/$IMAGE" "$F" | \
             grep tag: | \
-            sed -r 's/^([0-9]+)-( *tag: )(.+)$/sed -i"" '"'"'\1s\/tag: .*\/tag: "'$VERSION'"\/'"'"' /' | \
+            $SED -r 's/^([0-9]+)-( *tag: )(.+)$/'$SED' -i"" '"'"'\1s\/tag: .*\/tag: "'$VERSION'"\/'"'"' /' | \
             awk '{print $0"'$F'"}' | \
             sh && info "Updated image tag in $F"
           CHART=$(dirname "$F")/Chart.yaml
           if [ -r "$CHART" ]
           then
-            sed -r -i'' 's/version: "?([0-9]+\.)[^"]*"?/version: "\1'$VERSION'"/' "$CHART" && info "Update version of $CHART"
+            $SED -r -i'' 's/version: "?([0-9]+\.)[^"]*"?/version: "\1'$VERSION'"/' "$CHART" && info "Update version of $CHART"
           fi
         fi
       done

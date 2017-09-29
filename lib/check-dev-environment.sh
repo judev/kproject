@@ -87,6 +87,18 @@ then
   error "  Other: https://stedolan.github.io/jq/download/"
 fi
 
+if ! sed --version 2>&1 | grep -Fq 'GNU sed'
+then
+
+  SED=$(which gsed)
+  if [ ! -x "$SED" ]
+  then
+    error "Please install GNU sed:"
+    error "  Mac: brew install gnu-sed"
+  fi
+
+fi
+
 BLACKBOX=$(which blackbox_decrypt_all_files)
 if [ ! -x "$BLACKBOX" ]
 then
