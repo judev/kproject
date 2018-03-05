@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+if [ -z "$1" ]
+then
+  # kproject secrets create-registry-key
+  (
+    # config_get_minikube
+    # export MINIKUBE
+    helm template \
+      -f <("$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/values.yaml.sh") \
+      -f "$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/containers.yaml" \
+      "$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/$PROJECT_ID-$ENVIRONMENT_NAME"
+  )
+else
+  helm template "$PROJECT_ROOT_PATH/services/$1"
+fi
+
+

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+VERSION=$(date +'%y%m%d.%H%M%S')
+
+if [ "$1" == "--all" ]
+then
+  for CHART in $(kproject chart list)
+  do
+    CHART_PATH=$(kproject chart path "$CHART")/Chart.yaml
+    if [ -r "$CHART_PATH" ]
+    then
+      $SED -r -i'' 's/version: "?([0-9]+\.)[^"]*"?/version: "\1'$VERSION'"/' "$CHART_PATH" && info "Updated version of $CHART"
+    else
+      error "$CHART_PATH not found"
+    fi
+  done
+else
+  for CHART in $@
+  do
+    CHART_PATH=$(kproject chart path "$CHART")/Chart.yaml
+    if [ -r "$CHART_PATH" ]
+    then
+      $SED -r -i'' 's/version: "?([0-9]+\.)[^"]*"?/version: "\1'$VERSION'"/' "$CHART_PATH" && info "Updated version of $CHART"
+    else
+      error "$CHART_PATH not found"
+    fi
+  done
+fi
+

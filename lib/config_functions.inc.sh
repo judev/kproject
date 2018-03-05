@@ -14,12 +14,13 @@ config_export() {
   eval $(cat "$CONFIG_ROOT_PATH/environments/$ENVIRONMENT_NAME/common.properties" | sed 's/^/export /')
   export ENVIRONMENT_PATH="$CONFIG_ROOT_PATH/environments/$ENVIRONMENT_NAME"
   export ENVIRONMENT_CHART="$ENVIRONMENT_PATH/${PROJECT_ID}-${ENVIRONMENT_NAME}"
+  export SED
   export -f config_get_minikube info error error_exit
 }
 
 config_get_minikube() {
   MINIKUBE="minikube --profile=${PROJECT_ID}-local"
-  ($MINIKUBE status | grep Running > /dev/null) || $MINIKUBE start
+  ($MINIKUBE status | grep Running > /dev/null) || $MINIKUBE start --memory 4096
   $MINIKUBE addons list | grep -qF 'ingress: enabled' || $MINIKUBE addons enable ingress
   eval $($MINIKUBE docker-env)
 }
@@ -116,13 +117,13 @@ __config_post_init() {
   then
     return
   fi
-  local NEWMINIKUBE=$(test -z "$MINIKUBE" && echo 1)
-  if [ -n "$NEWMINIKUBE" ]
-  then
-    config_get_minikube
-  fi
   if [ "$ENVIRONMENT_TYPE" == "minikube" ]
   then
+    local NEWMINIKUBE=$(test -z "$MINIKUBE" && echo 1)
+    if [ -n "$NEWMINIKUBE" ]
+    then
+      config_get_minikube
+    fi
     if [ -n "$NEWMINIKUBE" ]
     then
       MACHINE_IP="$($MINIKUBE ip)"

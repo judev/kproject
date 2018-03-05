@@ -19,3 +19,12 @@ command . <(kproject completion bash)
 
 curl -Is "$DOCKER_REPO" >/dev/null && kproject chart sync pull -y >/dev/null 2>&1
 
+GSED="$(which gsed)"
+if [ -x "$GSED" ]
+then
+  SED=gsed
+else
+  SED=sed
+fi
+export SED
+

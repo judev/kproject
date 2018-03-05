@@ -16,6 +16,7 @@ then
     export MINIKUBE
     helm upgrade --install $HELM_RELEASE_NAME \
       -f <("$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/values.yaml.sh") \
+      -f "$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/containers.yaml" \
       "$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/$PROJECT_ID-$ENVIRONMENT_NAME"
   )
 else

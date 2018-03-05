@@ -23,14 +23,14 @@ info "Getting ready to sync your local directory ($CHART_REPO_LOCAL_PATH) to a r
 
 if [ "$skip_confirm" == "1" ]
 then
-  gsutil -m rsync "$CHART_REPO_LOCAL_PATH" "gs://$CHART_REPO_GCS_BUCKET"
+  gsutil -m rsync -d "$CHART_REPO_LOCAL_PATH" "gs://$CHART_REPO_GCS_BUCKET"
 else
   # dry run of the command
   gsutil -m rsync -n "$CHART_REPO_LOCAL_PATH" "gs://$CHART_REPO_GCS_BUCKET"
 
   read -p "Are you sure you would like to continue with these changes? [y/N]} " confirm
   if [[ $confirm =~ [yY](es)* ]]; then
-    gsutil -m rsync "$CHART_REPO_LOCAL_PATH" "gs://$CHART_REPO_GCS_BUCKET"
+    gsutil -m rsync -d "$CHART_REPO_LOCAL_PATH" "gs://$CHART_REPO_GCS_BUCKET"
   else
     error "Discontinuing sync process."
     return 1

@@ -4,6 +4,12 @@ set -eo pipefail
 
 IMAGE=$1
 VERSION=$2
+
+if [ -z "$VERSION" ]
+then
+  VERSION=$(cat "$(kproject container path "$IMAGE")"/VERSION)
+fi
+
 if kproject container security enabled
 then
   kproject container security docker-login
