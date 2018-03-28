@@ -1,3 +1,2 @@
 build and tag docker image.
-this will also update the image.tag in any relevant service values.yaml
-this will also update the version in any relevant service Chart.yaml
+this will also update the image.tag in current environment cluster.yaml

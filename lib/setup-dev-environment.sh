@@ -48,8 +48,6 @@ else
     read PROJECT_EMAIL_SUFFIX
     echo -n "Enter Docker repo: "
     read DOCKER_REPO
-    echo -n "Enter Chart repo GCS bucket name: "
-    read CHART_REPO_GCS_BUCKET
   fi
 fi
 
@@ -66,11 +64,9 @@ test -d "$PROJECT_ROOT_PATH/environments/local" || mkdir -p "$PROJECT_ROOT_PATH/
 
 test -f "$PROJECT_ROOT_PATH/.project.properties" || (
   echo PROJECT_ROOT_PATH='"'"$PROJECT_ROOT_PATH"'"'
-  echo CHART_REPO_LOCAL_PATH='"'"$PROJECT_ROOT_PATH/charts"'"'
   echo PROJECT_ID='"'"$PROJECT_ID"'"'
   echo PROJECT_EMAIL_SUFFIX='"'"$PROJECT_EMAIL_SUFFIX"'"'
   echo DOCKER_REPO='"'"$DOCKER_REPO"'"'
-  echo CHART_REPO_GCS_BUCKET='"'"$CHART_REPO_GCS_BUCKET"'"'
 ) > "$PROJECT_ROOT_PATH/.project.properties"
 
 test -f "$PROJECT_ROOT_PATH/environments/local/common.properties" || (
@@ -78,7 +74,6 @@ test -f "$PROJECT_ROOT_PATH/environments/local/common.properties" || (
   echo ENVIRONMENT_TYPE=minikube
   echo BASE_HOSTNAME=${PROJECT_ID}.local
   echo URL_SCHEME=http
-  echo HELM_RELEASE_NAME=local
 ) > "$PROJECT_ROOT_PATH/environments/local/common.properties" 
 
 test -f "$PROJECT_ROOT_PATH/environments/local/gcloud-configuration.properties" || (

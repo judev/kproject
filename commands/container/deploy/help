@@ -1,2 +1,2 @@
-build and push container, then update and push any charts that use it, then
+build and push container, then update and push any services that use it, then
 deploy them to the current environment

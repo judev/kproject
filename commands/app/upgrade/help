@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-echo "upgrade helm dependencies for environments/$PROJECT_ID-$ENVIRONMENT_NAME"

@@ -43,7 +43,7 @@ usage() {
 Usage: $0 group [options] command
 
 Group may be one of:
-  env | container | chart | service | secrets | app
+  env | container | service | secrets | app
 
 $(
 
@@ -52,7 +52,7 @@ printf "  %-30s - %s\n" "list" "list the available environment configurations"
 printf "  %-30s - %s\n" "use config-name" "switch to using the named environment"
 echo
 
-for group in container chart service secrets app exec
+for group in container service secrets app exec
 do
   cmds=$(command_list "$group")
   if [ -n "$cmds" ]
@@ -146,7 +146,7 @@ main() {
       command_root_path "$1"
       ;;
 
-    chart | container | app | service | gcloud | secrets | exec )
+    container | app | service | gcloud | secrets | exec )
       shift
       if [ "$1" == "--list-commands" ]
       then

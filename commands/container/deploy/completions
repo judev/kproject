@@ -2,5 +2,5 @@
 
 set -eo pipefail
 
-kproject chart containers --env
+kproject service containers --env
 

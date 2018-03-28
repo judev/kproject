@@ -12,15 +12,15 @@ then
   fi
   kproject secrets create-registry-key
   (
-    config_get_minikube
-    export MINIKUBE
-    helm upgrade --install $HELM_RELEASE_NAME \
-      -f <("$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/values.yaml.sh") \
-      -f "$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/containers.yaml" \
-      "$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/$PROJECT_ID-$ENVIRONMENT_NAME"
+    command cd "$PROJECT_ROOT_PATH/services"
+    kontemplate apply "${ENVIRONMENT_NAME}-cluster.yaml"
   )
 else
-  helm upgrade --install $HELM_RELEASE_NAME "$PROJECT_ROOT_PATH/services/$1"
+  (
+    command cd "$PROJECT_ROOT_PATH/services"
+    kontemplate apply "${ENVIRONMENT_NAME}-cluster.yaml" --include=$1
+  )
 fi
 
+kubectl get pods
 

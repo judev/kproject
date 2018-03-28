@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+for URL in $(kproject app debug 2>/dev/null | grep -hEo "$DOCKER_REPO/[a-zA-Z0-9_\.-]+")
+do
+  basename "$URL"
+done | sort | uniq
+
+

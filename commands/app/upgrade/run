@@ -2,5 +2,6 @@
 
 set -eo pipefail
 
-helm dependency update "$PROJECT_ROOT_PATH/environments/$ENVIRONMENT_NAME/$PROJECT_ID-$ENVIRONMENT_NAME/"
+echo "TODO: upgrade dependencies in ${ENVIRONMENT_NAME}-cluster.yaml to latest" >&2
+exit 1
 

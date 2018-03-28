@@ -5,8 +5,5 @@ set -eo pipefail
 kproject container build $@
 kproject container push $@
 
-kproject chart push --all
-
-kproject app upgrade
 kproject app deploy
 

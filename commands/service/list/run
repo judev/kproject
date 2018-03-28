@@ -2,5 +2,8 @@
 
 set -eo pipefail
 
-kproject chart list
+(
+  command cd "$PROJECT_ROOT_PATH/services"
+  sed -n '/include/,${s/.*name: *//p}' < "${ENVIRONMENT_NAME}-cluster.yaml"
+)
 

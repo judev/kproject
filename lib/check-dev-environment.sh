@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+HERE=$(dirname "$BASH_SOURCE")
+. $HERE/project_path.inc.sh
+
 ERRORS=""
 
 error() {
@@ -25,10 +28,10 @@ then
   error "Please install minikube: https://github.com/kubernetes/minikube/releases/latest"
 fi
 
-HELM=$(which helm)
-if [ ! -x "$HELM" ]
+KONTEMPLATE=$(which kontemplate)
+if [ ! -x "$KONTEMPLATE" ]
 then
-  error "Please install helm: https://github.com/kubernetes/helm#install"
+  error "Please install kontemplate: https://github.com/tazjin/kontemplate"
 fi
 
 GIT=$(which git)

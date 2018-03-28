@@ -2,17 +2,9 @@
 
 set -eo pipefail
 
-CHARTS="$@"
-for CHART in $CHARTS
-do
-  CHART=$(kproject chart path "$CHART")
-
-  if [ ! -d "$CHART" ]
-  then
-    echo "$CHART not found" >&2
-    exit 1
-  fi
-
-  helm upgrade --install $HELM_RELEASE_NAME "$CHART"
-done
+INCLUDE=$(echo "$@" | $SED 's/ /,/g')
+(
+  command cd "$PROJECT_ROOT_PATH/services"
+  kontemplate apply "${ENVIRONMENT_NAME}-cluster.yaml" --include=$INCLUDE
+)
 

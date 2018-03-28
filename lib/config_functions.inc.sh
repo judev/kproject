@@ -13,7 +13,6 @@ config_export() {
   eval $(cat "$CONFIG_ROOT_PATH/.project.properties" | sed 's/^/export /')
   eval $(cat "$CONFIG_ROOT_PATH/environments/$ENVIRONMENT_NAME/common.properties" | sed 's/^/export /')
   export ENVIRONMENT_PATH="$CONFIG_ROOT_PATH/environments/$ENVIRONMENT_NAME"
-  export ENVIRONMENT_CHART="$ENVIRONMENT_PATH/${PROJECT_ID}-${ENVIRONMENT_NAME}"
   export SED
   export -f config_get_minikube info error error_exit
 }
@@ -21,7 +20,7 @@ config_export() {
 config_get_minikube() {
   MINIKUBE="minikube --profile=${PROJECT_ID}-local"
   ($MINIKUBE status | grep Running > /dev/null) || $MINIKUBE start --memory 4096
-  $MINIKUBE addons list | grep -qF 'ingress: enabled' || $MINIKUBE addons enable ingress
+  $MINIKUBE addons list | grep -qF 'ingress: enabled' || $MINIKUBE addons enable ingress >&2
   eval $($MINIKUBE docker-env)
 }
 
@@ -155,9 +154,5 @@ __config_post_init() {
     kubectl config use-context "$CONFIG_NAME" > /dev/null
   fi
 
-  (kubectl get deployment --namespace=kube-system | grep -F tiller >/dev/null 2>&1) || (
-    helm init
-    helm repo list | grep "$CHART_REPO_GCS_BUCKET" >/dev/null || helm repo add "$CHART_REPO_GCS_BUCKET" "https://$CHART_REPO_GCS_BUCKET.storage.googleapis.com"
-  )
 }
 

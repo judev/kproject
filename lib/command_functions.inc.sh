@@ -23,11 +23,16 @@ command_list() {
   local group=$(__command_group "$1")
   local path=$(__command_root "$group")
 
-  for command in $(find "$path" -type f -name run | sort)
-  do
-    let len="2 + ${#path}"
-    echo $(dirname "$command") | tail -c+$len #| tr '/' ' '
-  done
+  if [ -d "$path" ]
+  then
+    for command in $(find "$path" -type f -name run | sort)
+    do
+      let len="2 + ${#path}"
+      echo $(dirname "$command") | tail -c+$len #| tr '/' ' '
+    done
+  else
+    echo "command_list: group $group not found" >&2
+  fi
 }
 
 command_root_path() {

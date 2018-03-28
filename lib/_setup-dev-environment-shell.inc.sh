@@ -5,7 +5,9 @@ KPROJECT_ROOT_PATH=$(command cd "$HERE"/..; pwd)
 . $HERE/config_functions.inc.sh
 . $HERE/ps1_functions.inc.sh
 
-export PATH="$PROJECT_ROOT_PATH/bin":"$KPROJECT_ROOT_PATH":$PATH
+. $HERE/project_path.inc.sh
+
+export PATH="$KPROJECT_ROOT_PATH":$PATH
 
 config_init "$PROJECT_ROOT_PATH"
 ps1_set --prompt $
@@ -14,10 +16,7 @@ export MINIKUBE
 
 command . <(kubectl completion bash)
 command . <(minikube completion bash)
-command . <(helm completion bash)
 command . <(kproject completion bash)
-
-curl -Is "$DOCKER_REPO" >/dev/null && kproject chart sync pull -y >/dev/null 2>&1
 
 GSED="$(which gsed)"
 if [ -x "$GSED" ]
