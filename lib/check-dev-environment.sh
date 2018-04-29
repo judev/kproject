@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 HERE=$(dirname "$BASH_SOURCE")
+KPROJECT_PATH=$(cd "$HERE"/../; pwd)
 . $HERE/project_path.inc.sh
 
 ERRORS=""
@@ -25,7 +26,19 @@ fi
 MINIKUBE=$(which minikube)
 if [ ! -x "$MINIKUBE" ]
 then
-  error "Please install minikube: https://github.com/kubernetes/minikube/releases/latest"
+  if [ "Darwin" = "$(uname)" ]
+  then
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.26.1/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube $KPROJECT_PATH/bin/osx/
+  elif [ "Linux" = "$(uname)" ]
+  then
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.26.1/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube $KPROJECT_PATH/bin/linux-x86_64/
+  fi
+
+  MINIKUBE=$(which minikube)
+  if [ ! -x "$MINIKUBE" ]
+  then
+    error "Please install minikube: https://github.com/kubernetes/minikube/releases/latest"
+  fi
 fi
 
 KONTEMPLATE=$(which kontemplate)
