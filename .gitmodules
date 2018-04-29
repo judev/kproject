@@ -1,3 +1,6 @@
 [submodule "3rdparty/blackbox"]
 	path = 3rdparty/blackbox
 	url = https://github.com/StackExchange/blackbox.git
+[submodule "3rdparty/kubectx"]
+	path = 3rdparty/kubectx
+	url = https://github.com/ahmetb/kubectx.git

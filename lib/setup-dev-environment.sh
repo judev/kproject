@@ -79,7 +79,7 @@ test -f "$PROJECT_ROOT_PATH/environments/local/common.properties" || (
 ) > "$PROJECT_ROOT_PATH/environments/local/common.properties" 
 
 test -f "$PROJECT_ROOT_PATH/environments/local/gcloud-configuration.properties" || (
-  echo core/project=staging-${PROJECT_EMAIL_SUFFIX}
+  echo core/project=staging-${PROJECT_ID}
   echo compute/zone=europe-west1-b
 ) > "$PROJECT_ROOT_PATH/environments/local/gcloud-configuration.properties" 
 
