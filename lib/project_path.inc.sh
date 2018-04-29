@@ -1,4 +1,6 @@
 
+PATH="$KPROJECT_PATH/3rdparty/blackbox/bin":$PATH
+
 for root_path in "$KPROJECT_PATH" "$PROJECT_ROOT_PATH"
 do
   PATH="$root_path/bin/xplatform":$PATH

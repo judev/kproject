@@ -1,0 +1,3 @@
+[submodule "3rdparty/blackbox"]
+	path = 3rdparty/blackbox
+	url = https://github.com/StackExchange/blackbox.git
