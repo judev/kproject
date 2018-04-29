@@ -1,22 +1,25 @@
 
-PATH="$PROJECT_ROOT_PATH/bin/xplatform":$PATH
+for root_path in "$KPROJECT_PATH" "$PROJECT_ROOT_PATH"
+do
+  PATH="$root_path/bin/xplatform":$PATH
 
-if [ "Darwin" = "$(uname)" ]
-then
+  if [ "Darwin" = "$(uname)" ]
+  then
 
-  PATH="$PROJECT_ROOT_PATH/bin/osx":$PATH
+    PATH="$root_path/bin/osx":$PATH
 
-elif [ "Linux" = "$(uname)" ]
-then
+  elif [ "Linux" = "$(uname)" ]
+  then
 
-  PATH="$PROJECT_ROOT_PATH/bin/linux-x86_64":$PATH
+    PATH="$root_path/bin/linux-x86_64":$PATH
 
-else
+  else
 
-  echo "System '$(uname)' not currently supported" >&2
-  exit 1
+    echo "System '$(uname)' not currently supported" >&2
+    exit 1
 
-fi
+  fi
 
-PATH="$PROJECT_ROOT_PATH/bin":$PATH
+  PATH="$root_path/bin":$PATH
+done
 

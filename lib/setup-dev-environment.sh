@@ -3,6 +3,7 @@
 set -eo pipefail
 
 HERE=$(dirname "$BASH_SOURCE")
+KPROJECT_PATH=$(cd "$HERE"/../; pwd)
 
 PROJECT_ROOT_PATH=$1
 if [ -z "$PROJECT_ROOT_PATH" ]
@@ -16,6 +17,7 @@ else
   PROJECT_ROOT_PATH=$(command cd "$PROJECT_ROOT_PATH"; pwd)
 fi
 export PROJECT_ROOT_PATH
+export KPROJECT_PATH
 
 # Check that the necessary software is installed
 
