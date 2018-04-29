@@ -55,11 +55,6 @@ else
   then
     error "Could not find npm - is your node install broken?"
   fi
-  YARN=$(which yarn)
-  if [ ! -x "$YARN" ]
-  then
-    error "Please install yarn: https://yarnpkg.com/lang/en/docs/install/"
-  fi
 fi
 
 COMPOSER=$(which composer)
