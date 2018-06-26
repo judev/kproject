@@ -154,5 +154,12 @@ __config_post_init() {
     kubectl config use-context "$CONFIG_NAME" > /dev/null
   fi
 
+  BOOT_SCRIPT="$PROJECT_ROOT_PATH/scripts/boot.sh"
+  if [ -x "$BOOT_SCRIPT" ]
+  then
+    config_export
+    "$BOOT_SCRIPT"
+  fi
+
 }
 
