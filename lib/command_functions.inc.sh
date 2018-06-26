@@ -58,7 +58,7 @@ command_help() {
   fi
 }
 
-command_get() {
+command_call() {
   local group=$(__command_group "$1")
   shift
 
@@ -72,26 +72,14 @@ command_get() {
       path="$path/$name"
     elif [ -f "$path/run" ]
     then
-      echo "$path"
+      config_export
+      "$path/run" $@
       break
     else
+      echo "Not found $path/$name" 1>&2
       return 1
     fi
     shift
   done
-}
-
-command_call() {
-  path=$(command_get "$1")
-  if [ -n "$path" ]
-  then
-    (
-      config_export
-      "$path/run" $@
-    )
-  else
-    echo "Not found $path/$name" 1>&2
-    return 1
-  fi
 }
 
