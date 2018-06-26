@@ -141,11 +141,16 @@ __config_post_init() {
         fi
 
         sudo bash -c "$SED -i'' '/$BASE_HOSTNAME/d' /etc/hosts; \
-          echo '$MACHINE_IP $BASE_HOSTNAME' >> /etc/hosts; \
-          echo '$MACHINE_IP en.$BASE_HOSTNAME' >> /etc/hosts; \
-          echo '$MACHINE_IP www.$BASE_HOSTNAME' >> /etc/hosts; \
-          echo '$MACHINE_IP admin.$BASE_HOSTNAME' >> /etc/hosts; \
-          echo '$MACHINE_IP newsletter.$BASE_HOSTNAME' >> /etc/hosts"
+          echo '$MACHINE_IP $BASE_HOSTNAME' >> /etc/hosts;"
+
+        if [ -n "$ALL_HOSTNAMES" ]
+        then
+          for host in $ALL_HOSTNAMES
+          do
+            sudo bash -c "$SED -i'' '/$host/d' /etc/hosts; \
+              echo '$MACHINE_IP $host' >> /etc/hosts;"
+          done
+        fi
 
         echo "Done"
       )
