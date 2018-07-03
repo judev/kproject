@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+echo "show the commands that would be run to install environments/$PROJECT_ID-$ENVIRONMENT_NAME into Kubernetes"

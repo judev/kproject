@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+if [ -z "$1" ]
+then
+  (
+    command cd "$PROJECT_ROOT_PATH/services"
+    kontemplate apply "${ENVIRONMENT_NAME}-cluster.yaml" --dry-run
+  )
+else
+  (
+    command cd "$PROJECT_ROOT_PATH/services"
+    kontemplate apply "${ENVIRONMENT_NAME}-cluster.yaml" --include=$1 --dry-run
+  )
+fi
+
