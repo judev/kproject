@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+set -eo pipefail
+
+(
+  find "$PROJECT_ROOT_PATH/services" -type f -executable -name 'generate.sh' | bash
+)
+
+ set +e
 
 if [ -z "$1" ]
 then
